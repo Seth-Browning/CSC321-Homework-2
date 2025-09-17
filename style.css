@@ -17,6 +17,19 @@ h1 {
     color: var(--raisin-black);
 }
 
+button {
+    font-family: 'Times new roman', serif;
+    font-weight: 600;
+}
+
+#new-game {
+    background: var(--maize);
+    border: 1px var(--raisin-black) solid;
+    border-radius: 3px;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
 #game-board {
     display: flex;
     align-items: center;

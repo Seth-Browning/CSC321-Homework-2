@@ -1,11 +1,11 @@
 import { WORDS } from "./words.js";
 
 const NUMBER_OF_GUESSES = 6;
-let guessesRemaining = NUMBER_OF_GUESSES;
-let currentGuess = []
-let nextLetter = 0;
-let rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
-console.log(rightGuessString)
+
+let guessesRemaining;
+let currentGuess;
+let nextLetter;
+let rightGuessString;
 
 const colors = {
     aero: '#5BC0EB',
@@ -156,6 +156,30 @@ const shadeKeyBoard = (letter, color) => {
     }
 }
 
+const resetKeyBoard = () => {
+    for (const elem of document.getElementsByClassName('keyboard-button')) {
+        elem.style.background = 'none';
+    }
+}
+
+const resetLetterBoxes = () => {
+    for (const box of document.getElementsByClassName('letter-box')) {
+        box.textContent = "";
+        box.style.backgroundColor = "white"
+        box.classList.remove('filled-box')
+    }
+}
+
+const resetGame = () => {
+    guessesRemaining = NUMBER_OF_GUESSES
+    currentGuess = []
+    nextLetter = 0;
+    rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
+    console.log(rightGuessString)
+    resetLetterBoxes()
+    resetKeyBoard();
+}
+
 document.addEventListener("keyup", (e) => {
 
     if (guessesRemaining === 0) return;
@@ -189,3 +213,10 @@ document.getElementById('keyboard-cont').addEventListener("click", (e) => {
 
     document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
 })
+
+document.getElementById('new-game').addEventListener('click', () => {
+    resetGame()
+})
+
+
+resetGame();
