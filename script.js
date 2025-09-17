@@ -4,7 +4,7 @@ const NUMBER_OF_GUESSES = 6;
 let guessesRemaining = NUMBER_OF_GUESSES;
 let currentGuess = []
 let nextLetter = 0;
-let rightGuessString = WORDS[Math.floor(Math.random() & WORDS.length)]
+let rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
 console.log(rightGuessString)
 
 
@@ -45,6 +45,15 @@ const insertLetter = (pressedKey) => {
 }
 
 const deleteLetter = () => {
+    let row = document.getElementsByClassName('letter-row')[6 - guessesRemaining]
+    let box = row.children[nextLetter - 1]
+    box.textContent = ""
+    box.classList.remove("filled-box")
+    currentGuess.pop()
+    nextLetter -= 1
+}
+
+const checkGuess = () => {
     let row = document.getElementsByClassName('letter-row')[6 - guessesRemaining]
     let guessString = ""
     let rightGuess = Array.from(rightGuessString)
@@ -104,7 +113,7 @@ const deleteLetter = () => {
     }
 }
 
-const shadeKeyBoard = () => {
+const shadeKeyBoard = (letter, color) => {
     for (const elem of document.getElementsByClassName("keyboard-button")) {
         if (elem.textContent === letter) {
             let oldColor = elem.style.backgroundColor
