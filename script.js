@@ -63,12 +63,12 @@ const checkGuess = () => {
     }
 
     if (guessString.length !== 5) {
-        alert("Not enough letters!")
+        toastr.error("Not enough letters!")
         return;
     }
 
     if (!WORDS.includes(guessString)) {
-        alert("Word not in list!")
+        toastr.error("Word not in list!")
         return
     }
 
@@ -98,7 +98,7 @@ const checkGuess = () => {
     }
 
     if (guessString === rightGuessString) {
-        alert("You Guessed right! Game over!")
+        toastr.success("You Guessed right! Game over!")
         guessesRemaining = 0;
         return;
     } else {
@@ -107,8 +107,8 @@ const checkGuess = () => {
         nextLetter = 0;
 
         if (guessesRemaining === 0) {
-            alert("You've run out of guesses! Game over!")
-            alert(`The right word was: ${rightGuessString}`)
+            toastr.error("You've run out of guesses! Game over!")
+            toastr.info(`The right word was: ${rightGuessString}`)
         }
     }
 }
