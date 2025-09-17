@@ -37,7 +37,7 @@ const animateCSS = (element, animation, prefix = 'animate__') => {
         node.classList.add(`${prefix}animated`, animationName)
 
         function handleAnimationEnd(event) {
-            event.stopPropogation();
+            event.stopPropagation();
             node.classList.remove(`${prefix}animated`, animationName)
             resolve('Animation eneded')
         }
