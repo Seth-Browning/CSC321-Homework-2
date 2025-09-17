@@ -27,6 +27,25 @@ const initBoard = () => {
 
 initBoard();
 
+
+const animateCSS = (element, animation, prefix = 'animate__') => {
+    new Promise((resolve, reject) => {
+        const animationName = `${prefix}${animation}`
+        const node = element;
+        node.style.setProperty('--animation-duration', '0.3s')
+
+        node.classList.add(`${prefix}animated`, animationName)
+
+        function handleAnimationEnd(event) {
+            event.stopPropogation();
+            node.classList.remove(`${prefix}animated`, animationName)
+            resolve('Animation eneded')
+        }
+
+        node.addEventListener('animationend', handleAnimationEnd, {once: true})
+    })
+}
+
 /**
  * 
  * @param {string} pressedKey 
@@ -38,6 +57,7 @@ const insertLetter = (pressedKey) => {
 
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let box = row.children[nextLetter]
+    animateCSS(box, 'pulse')
     box.textContent = pressedKey;
     box.classList.add("filled-box")
     currentGuess.push(pressedKey)
@@ -92,6 +112,7 @@ const checkGuess = () => {
 
         let delay = 250 * i;
         setTimeout(() => {
+            animateCSS(box, 'flipInX')
             box.style.backgroundColor = letterColor;
             shadeKeyBoard(letter, letterColor);
         }, delay)
@@ -147,4 +168,15 @@ document.addEventListener("keyup", (e) => {
     } else {
         insertLetter(pressedKey)
     }
+})
+
+document.getElementById('keyboard-cont').addEventListener("click", (e) => {
+    const target = e.target
+
+    if (!target.classList.contains("keyboard-button")) return;
+
+    let key = target.textContent;
+    if (key === "Del") key = "Backspace";
+
+    document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
 })
