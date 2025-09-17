@@ -1,6 +1,20 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --aero: #5BC0EB;
+    --maize: #FDE74C;
+    --yellow-green: #b0e242;
+    --persian-red: #e64c49;
+    --raisin-black: #211A1E;
+    --vanish-gray: #bbbbbb;
+}
+
 h1 {
     text-align: center;
     font-family: 'Times new roman', serif;
+    color: var(--raisin-black);
 }
 
 #game-board {
@@ -24,7 +38,7 @@ h1 {
 }
 
 .filled-box {
-    border: 2px solid black;
+    border: 2px solid var(--raisin-black);
 }
 
 .letter-row {
@@ -51,10 +65,12 @@ h1 {
     font-weight: 600;
     font-family: 'Times new roman', serif;
     background: none;
-    border: 1px black solid;
+    border: 1px var(--raisin-black) solid;
     border-radius: 3px;
     padding: 0.5rem;
     margin: 0 2px;
+    min-width: 3rem;
+    min-height: 2.5rem;
     cursor: pointer;
     text-transform: uppercase;
 }
@@ -64,9 +80,9 @@ h1 {
 }
 
 .hover-green:hover {
-    background: limegreen;
+    background: var(--yellow-green);
 }
 
 .hover-red:hover {
-    background: firebrick;
+    background: var(--persian-red);
 }

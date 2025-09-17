@@ -7,6 +7,15 @@ let nextLetter = 0;
 let rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
 console.log(rightGuessString)
 
+const colors = {
+    aero: '#5BC0EB',
+    maize: '#FDE74C',
+    'yellow-green': '#b0e242',
+    'persian-red': '#e64c49',
+    'raisin-black': '#211A1E',
+    'vanish-gray': '#bbbbbb'
+}
+
 
 const initBoard = () => {
     let board = document.getElementById('game-board')
@@ -99,12 +108,12 @@ const checkGuess = () => {
 
         let letterPosition = rightGuess.indexOf(currentGuess[i])
         if (letterPosition === -1) {
-            letterColor = 'grey'
+            letterColor = colors['vanish-gray']
         } else {
             if (currentGuess[i] === rightGuess[i]) {
-                letterColor = 'green'
+                letterColor = colors['yellow-green']
             } else {
-                letterColor = 'yellow'
+                letterColor = colors['maize']
             }
 
             rightGuess[letterPosition] = "#"
@@ -138,8 +147,8 @@ const shadeKeyBoard = (letter, color) => {
     for (const elem of document.getElementsByClassName("keyboard-button")) {
         if (elem.textContent === letter) {
             let oldColor = elem.style.backgroundColor
-            if (oldColor === 'green') return;
-            if (oldColor === 'yellow' && color !== 'green') return;
+            if (oldColor === colors['yellow-green']) return;
+            if (oldColor === colors['maize'] && color !== colors['yellow-green']) return;
 
             elem.style.backgroundColor = color;
             break;
