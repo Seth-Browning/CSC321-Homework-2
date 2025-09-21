@@ -1,6 +1,7 @@
 import { WORDS } from "./words.js";
 
 const NUMBER_OF_GUESSES = 6;
+const DEBUG = false
 
 let guessesRemaining;
 let currentGuess;
@@ -8,12 +9,20 @@ let nextLetter;
 let rightGuessString;
 
 const colors = {
-    aero: '#5BC0EB',
+    aero: '#815bebff',
     maize: '#FDE74C',
     'yellow-green': '#b0e242',
     'persian-red': '#e64c49',
     'raisin-black': '#211A1E',
     'vanish-gray': '#bbbbbb'
+}
+
+const boardColors = {
+    wrong: 'var(--vanish-gray)',
+    right: 'var(--yellow-green)',
+    rightMultiple: 'linear-gradient(180deg in oklab, var(--yellow-green) 45%, var(--aero) 115%)',
+    rightLetter: 'var(--maize)',
+    rightLetterMultiple: 'linear-gradient(180deg in oklab, var(--maize) 45%, var(--aero) 115%)'
 }
 
 
@@ -53,6 +62,20 @@ const animateCSS = (element, animation, prefix = 'animate__') => {
 
         node.addEventListener('animationend', handleAnimationEnd, {once: true})
     })
+}
+
+/**
+ * 
+ * @param {string} string 
+ * @param {any} char 
+ * @returns {int[]}
+ */
+const indexesOfOccurense = (string, char) => {
+    let occurenses = []
+    for (let i = 0; i < string.length; i++) {
+        if(string[i] === char) occurenses.push(i)
+    }
+    return occurenses;
 }
 
 /**
@@ -101,20 +124,44 @@ const checkGuess = () => {
         return
     }
 
+    // color for green-purple: linear-gradient(180deg in oklab, var(--yellow-green) 45%, var(--aero) 115%)
+    // color for yellow-purple: linear-gradient(180deg in oklab, var(--maize) 45%, var(--aero) 115%)
+
     for (let i = 0; i < 5; i++) {
         let letterColor = "";
         let box = row.children[i];
         let letter = currentGuess[i]
 
         let letterPosition = rightGuess.indexOf(currentGuess[i])
-        if (letterPosition === -1) {
+        let occurences = indexesOfOccurense(rightGuess, currentGuess[i])
+        if (occurences.length === 0) {
             letterColor = colors['vanish-gray']
         } else {
-            if (currentGuess[i] === rightGuess[i]) {
-                letterColor = colors['yellow-green']
+
+            if (occurences.includes(i)) {
+                if (occurences.length === 1) letterColor = boardColors.right
+                else {
+                    let allFound = true;
+                    occurences.forEach(index => {
+                        if(currentGuess[index] !== rightGuess[index]) allFound = false
+                    })
+
+                    if (allFound) letterColor = boardColors.right
+                    else letterColor = boardColors.rightMultiple
+                }
             } else {
-                letterColor = colors['maize']
+                if (occurences.length === 1) {
+                    letterColor = boardColors.rightLetter
+                }
+                else letterColor = boardColors.rightLetterMultiple
             }
+
+
+            // if (currentGuess[i] === rightGuess[i]) {
+            //     letterColor = colors['yellow-green']
+            // } else {
+            //     letterColor = colors['maize']
+            // }
 
             rightGuess[letterPosition] = "#"
         }
@@ -122,7 +169,7 @@ const checkGuess = () => {
         let delay = 250 * i;
         setTimeout(() => {
             animateCSS(box, 'flipInX')
-            box.style.backgroundColor = letterColor;
+            box.style.background = letterColor;
             shadeKeyBoard(letter, letterColor);
         }, delay)
     }
@@ -146,11 +193,12 @@ const checkGuess = () => {
 const shadeKeyBoard = (letter, color) => {
     for (const elem of document.getElementsByClassName("keyboard-button")) {
         if (elem.textContent === letter) {
-            let oldColor = elem.style.backgroundColor
-            if (oldColor === colors['yellow-green']) return;
-            if (oldColor === colors['maize'] && color !== colors['yellow-green']) return;
+            let oldColor = elem.style.background
+            if (oldColor === boardColors.right) return;
+            if (oldColor === boardColors.rightMultiple && color !== boardColors.right) return;
+            if (oldColor === boardColors.rightLetterMultiple && !(color === boardColors.right || color == boardColors.rightMultiple)) return;
 
-            elem.style.backgroundColor = color;
+            elem.style.background = color;
             break;
         }
     }
@@ -165,7 +213,7 @@ const resetKeyBoard = () => {
 const resetLetterBoxes = () => {
     for (const box of document.getElementsByClassName('letter-box')) {
         box.textContent = "";
-        box.style.backgroundColor = "white"
+        box.style.background = "none"
         box.classList.remove('filled-box')
     }
 }
@@ -174,28 +222,31 @@ const resetGame = () => {
     guessesRemaining = NUMBER_OF_GUESSES
     currentGuess = []
     nextLetter = 0;
-    rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
+    //rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
+    //rightGuessString = "poses"
+    rightGuessString = DEBUG ? "poses" : WORDS[Math.floor(Math.random() * WORDS.length)]
     console.log(rightGuessString)
     resetLetterBoxes()
     resetKeyBoard();
 }
 
+
 document.addEventListener("keyup", (e) => {
-
+    
     if (guessesRemaining === 0) return;
-
+    
     let pressedKey = String(e.key)
     if (pressedKey === "Backspace" && nextLetter !== 0) {
         deleteLetter()
         return;
     }
-
+    
     if (pressedKey === "Enter") {
         checkGuess();
         return;
     }
-
-    let found = pressedKey.match(/[a-z]/gi)
+    
+    let found = pressedKey.match(/^[a-z]$/gi)
     if (!found || found.length > 1) {
         return;
     } else {
@@ -205,18 +256,27 @@ document.addEventListener("keyup", (e) => {
 
 document.getElementById('keyboard-cont').addEventListener("click", (e) => {
     const target = e.target
-
+    
     if (!target.classList.contains("keyboard-button")) return;
-
+    
     let key = target.textContent;
     if (key === "Del") key = "Backspace";
-
+    
     document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
 })
 
 document.getElementById('new-game').addEventListener('click', () => {
+    toastr.info("New Game")
     resetGame()
 })
 
+document.getElementById('new-game').addEventListener('keydown', (e) => {
+    e.preventDefault();
+})
 
 resetGame();
+
+toastr.options = {
+    "positionClass": "toast-top-center",
+    timeOut: "1000"
+}
