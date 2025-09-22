@@ -4,6 +4,11 @@ import { WORDS_6 } from "./words6.js";
 const NUMBER_OF_GUESSES = (wordLength = 5) => {return Math.ceil(wordLength * 6 / 5)}
 const DEBUG = false
 
+const modal = document.getElementById('modal-overlay')
+const newGame5 = document.getElementById('new-game-5')
+const newGame6 = document.getElementById('new-game-6')
+
+
 let guessesRemaining;
 let currentGuess;
 let nextLetter;
@@ -33,6 +38,7 @@ const boardColors = {
  */
 const initBoard = (wordLength = 5) => {
     let board = document.getElementById('game-board')
+    board.innerHTML = ""
 
     for (let i = 0; i < NUMBER_OF_GUESSES(wordLength); i++) {
         let row = document.createElement("div")
@@ -277,12 +283,21 @@ document.addEventListener("keyup", (e) => {
 document.getElementById('keyboard-cont').addEventListener("click", (e) => {
     const target = e.target
     
+    
     if (!target.classList.contains("keyboard-button")) return;
     
     let key = target.textContent;
     if (key === "Del") key = "Backspace";
     
     document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
+})
+
+document.addEventListener('click', (e) => {
+    const target = e.target;
+    
+    if(!target.closest('#modal-overlay') && modal.dataset.active === "true") {
+        modal.dataset.active = "false"
+    }
 })
 
 document.getElementById('new-game').addEventListener('click', () => {
