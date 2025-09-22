@@ -102,17 +102,18 @@ button {
 
 #modal-overlay {
     position: absolute;
-    top: 50%;
+    top: 35%;
     left: 50%;
     transform-origin: center;
     transform: translate(-50%, -50%);
     background: rgb(255, 255, 255);
     border-radius: 2px;
     border: 1px var(--raisin-black) solid;
-    padding: 0.5rem;
+    padding: 2rem;
+    box-shadow: 0 0 40px 5px rgba(0, 0, 0, 0.5), inset 0 0 5px rgba(0, 0, 0, 0.5);
     width: 50vw;
     max-width: 500px;
-    height: 90vh;
+    min-height: 150px;
 }
 
 #modal-overlay[data-active="true"] {
@@ -123,14 +124,26 @@ button {
     display: none;
 }
 
+#new-game-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}
+
 .new-game-button {
     font-size: 1rem;
     padding: 0.5rem;
     font-weight: 700;
+    flex: 1;
     color: var(--raisin-black);
     background: var(--maize);
     border: 1px var(--raisin-black) solid;
     border-radius: 3px;
     color: var(--raisin-black);
     cursor: pointer;
+}
+
+#modal-title {
+    margin-top: 0;
 }
