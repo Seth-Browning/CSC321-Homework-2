@@ -8,21 +8,11 @@ const modal = document.getElementById('modal-overlay')
 const newGame5 = document.getElementById('new-game-5')
 const newGame6 = document.getElementById('new-game-6')
 
-
 let guessesRemaining;
 let currentGuess;
 let nextLetter;
 let rightGuessString;
-let currentGameWordLength = 6;
-
-const colors = {
-    aero: '#815bebff',
-    maize: '#FDE74C',
-    'yellow-green': '#b0e242',
-    'persian-red': '#e64c49',
-    'raisin-black': '#211A1E',
-    'vanish-gray': '#bbbbbb'
-}
+let currentGameWordLength = 5;
 
 const boardColors = {
     wrong: 'var(--vanish-gray)',
@@ -54,23 +44,20 @@ const initBoard = (wordLength = 5) => {
     }
 }
 
-initBoard(currentGameWordLength);
-
-
 const animateCSS = (element, animation, prefix = 'animate__') => {
     new Promise((resolve, reject) => {
         const animationName = `${prefix}${animation}`
         const node = element;
         node.style.setProperty('--animation-duration', '0.3s')
-
+        
         node.classList.add(`${prefix}animated`, animationName)
-
+        
         function handleAnimationEnd(event) {
             event.stopPropagation();
             node.classList.remove(`${prefix}animated`, animationName)
             resolve('Animation eneded')
         }
-
+        
         node.addEventListener('animationend', handleAnimationEnd, {once: true})
     })
 }
@@ -80,24 +67,24 @@ const animateCSS = (element, animation, prefix = 'animate__') => {
  * @param {string} string 
  * @param {any} char 
  * @returns {int[]}
- */
+*/
 const indexesOfOccurense = (string, char) => {
     let occurenses = []
     for (let i = 0; i < string.length; i++) {
         if(string[i] === char) occurenses.push(i)
-    }
+        }
     return occurenses;
 }
 
 /**
  * 
  * @param {string} pressedKey 
- */
+*/
 const insertLetter = (pressedKey) => {
     if (nextLetter === currentGameWordLength) return;
-
+    
     pressedKey = pressedKey.toLowerCase();
-
+    
     let row = document.getElementsByClassName("letter-row")[NUMBER_OF_GUESSES(currentGameWordLength) - guessesRemaining]
     let box = row.children[nextLetter]
     animateCSS(box, 'pulse')
@@ -120,16 +107,16 @@ const checkGuess = () => {
     let row = document.getElementsByClassName('letter-row')[NUMBER_OF_GUESSES(currentGameWordLength) - guessesRemaining]
     let guessString = ""
     let rightGuess = Array.from(rightGuessString)
-
+    
     for (const val of currentGuess) {
         guessString += val
     }
-
+    
     if (guessString.length !== currentGameWordLength) {
         toastr.error("Not enough letters!")
         return;
     }
-
+    
     switch (currentGameWordLength) {
         case 5:
             if (!WORDS.includes(guessString)) {
@@ -157,7 +144,7 @@ const checkGuess = () => {
         let letterPosition = rightGuess.indexOf(currentGuess[i])
         let occurences = indexesOfOccurense(rightGuess, currentGuess[i])
         if (occurences.length === 0) {
-            letterColor = colors['vanish-gray']
+            letterColor = boardColors.wrong
         } else {
 
             if (occurences.includes(i)) {
@@ -165,7 +152,7 @@ const checkGuess = () => {
                 else {
                     let allFound = true;
                     occurences.forEach(index => {
-                        if(currentGuess[index] !== rightGuess[index]) allFound = false
+                        if (currentGuess[index] !== rightGuess[index]) allFound = false
                     })
 
                     if (allFound) letterColor = boardColors.right
@@ -200,7 +187,9 @@ const checkGuess = () => {
         toastr.success("You Guessed right! Game over!")
         guessesRemaining = 0;
 
-        setTimeout(() => modal.dataset.active = "true", 2500)
+        setTimeout(() => {
+            modal.dataset.active = "true"
+        }, 2500)
 
         return;
     } else {
@@ -211,8 +200,10 @@ const checkGuess = () => {
         if (guessesRemaining === 0) {
             toastr.error("You've run out of guesses! Game over!")
             toastr.info(`The right word was: ${rightGuessString}`)
-        
-            setTimeout(() => modal.dataset.active = "true", 2500)
+
+            setTimeout(() => {
+                modal.dataset.active = "true"
+            }, 2500)
         }
     }
 }
@@ -224,7 +215,7 @@ const shadeKeyBoard = (letter, color) => {
             if (oldColor === boardColors.right) return;
             if (oldColor === boardColors.rightMultiple && color !== boardColors.right) return;
             if (oldColor === boardColors.rightLetterMultiple && !(color === boardColors.right || color == boardColors.rightMultiple)) return;
-
+            
             elem.style.background = color;
             break;
         }
@@ -263,9 +254,9 @@ const resetGame = () => {
                 rightGuessString = WORDS_6[Math.floor(Math.random() * WORDS_6.length)]
                 break;
         }
-        
+
     }
-    
+
     guessesRemaining = NUMBER_OF_GUESSES(currentGameWordLength)
     console.log(rightGuessString)
     resetLetterBoxes()
@@ -275,7 +266,7 @@ const resetGame = () => {
 /**
  * 
  * @param {number} wordLength 
- */
+*/
 const setBoard = (wordLength) => {
     if (currentGameWordLength !== wordLength) {
         currentGameWordLength = wordLength;
@@ -285,20 +276,20 @@ const setBoard = (wordLength) => {
 
 
 document.addEventListener("keyup", (e) => {
-    
+
     if (guessesRemaining === 0) return;
-    
+
     let pressedKey = String(e.key)
     if (pressedKey === "Backspace" && nextLetter !== 0) {
         deleteLetter()
         return;
     }
-    
+
     if (pressedKey === "Enter") {
         checkGuess();
         return;
     }
-    
+
     let found = pressedKey.match(/^[a-z]$/gi)
     if (!found || found.length > 1) {
         return;
@@ -309,10 +300,10 @@ document.addEventListener("keyup", (e) => {
 
 document.getElementById('keyboard-cont').addEventListener("click", (e) => {
     const target = e.target
-    
-    
+
+
     if (!target.classList.contains("keyboard-button")) return;
-    
+
     let key = target.textContent;
     if (key === "Del") key = "Backspace";
     
@@ -322,14 +313,14 @@ document.getElementById('keyboard-cont').addEventListener("click", (e) => {
 document.addEventListener('click', (e) => {
     const target = e.target;
     
-    if(!target.closest('#modal-overlay') && modal.dataset.active === "true") {
+    if(!(target.closest('#modal-overlay') || target.id === 'new-game') && modal.dataset.active === "true") {
         modal.dataset.active = "false"
     }
 })
 
 document.getElementById('new-game').addEventListener('click', () => {
-    toastr.info("New Game")
-    resetGame()
+    console.log("clicked")
+    modal.dataset.active = "true"
 })
 
 document.getElementById('new-game').addEventListener('keydown', (e) => {
@@ -350,6 +341,7 @@ newGame6.addEventListener('click', () => {
 
 
 
+initBoard(currentGameWordLength);
 resetGame();
 
 toastr.options = {
