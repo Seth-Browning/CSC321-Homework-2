@@ -1,7 +1,7 @@
 import { WORDS } from "./words.js";
 import { WORDS_6 } from "./words6.js";
 
-const NUMBER_OF_GUESSES = (wordLength = 5) => {return Math.ceil(wordLength * 6 / 5)}
+const NUMBER_OF_GUESSES = (wordLength = 5) => {return wordLength + 1}
 const DEBUG = false
 
 const modal = document.getElementById('modal-overlay')
