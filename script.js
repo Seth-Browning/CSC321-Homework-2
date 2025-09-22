@@ -1,12 +1,14 @@
 import { WORDS } from "./words.js";
+import { WORDS_6 } from "./words6.js";
 
-const NUMBER_OF_GUESSES = 6;
+const NUMBER_OF_GUESSES = (wordLength = 5) => {return Math.ceil(wordLength * 6 / 5)}
 const DEBUG = false
 
 let guessesRemaining;
 let currentGuess;
 let nextLetter;
 let rightGuessString;
+let currentGameWordLength = 5;
 
 const colors = {
     aero: '#815bebff',
@@ -25,15 +27,18 @@ const boardColors = {
     rightLetterMultiple: 'linear-gradient(180deg in oklab, var(--maize) 45%, var(--aero) 115%)'
 }
 
-
-const initBoard = () => {
+/**
+ * 
+ * @param {number} wordLength 
+ */
+const initBoard = (wordLength = 5) => {
     let board = document.getElementById('game-board')
 
-    for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
+    for (let i = 0; i < NUMBER_OF_GUESSES(wordLength); i++) {
         let row = document.createElement("div")
         row.className = "letter-row"
 
-        for(let j = 0; j < 5; j++) {
+        for(let j = 0; j < wordLength; j++) {
             let box = document.createElement("div")
             box.className = "letter-box"
             row.appendChild(box)
@@ -43,7 +48,7 @@ const initBoard = () => {
     }
 }
 
-initBoard();
+initBoard(currentGameWordLength);
 
 
 const animateCSS = (element, animation, prefix = 'animate__') => {
@@ -83,11 +88,11 @@ const indexesOfOccurense = (string, char) => {
  * @param {string} pressedKey 
  */
 const insertLetter = (pressedKey) => {
-    if (nextLetter === 5) return;
+    if (nextLetter === currentGameWordLength) return;
 
     pressedKey = pressedKey.toLowerCase();
 
-    let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
+    let row = document.getElementsByClassName("letter-row")[currentGameWordLength + 1 - guessesRemaining]
     let box = row.children[nextLetter]
     animateCSS(box, 'pulse')
     box.textContent = pressedKey;
@@ -97,7 +102,7 @@ const insertLetter = (pressedKey) => {
 }
 
 const deleteLetter = () => {
-    let row = document.getElementsByClassName('letter-row')[6 - guessesRemaining]
+    let row = document.getElementsByClassName('letter-row')[currentGameWordLength + 1 - guessesRemaining]
     let box = row.children[nextLetter - 1]
     box.textContent = ""
     box.classList.remove("filled-box")
@@ -106,7 +111,7 @@ const deleteLetter = () => {
 }
 
 const checkGuess = () => {
-    let row = document.getElementsByClassName('letter-row')[6 - guessesRemaining]
+    let row = document.getElementsByClassName('letter-row')[currentGameWordLength + 1 - guessesRemaining]
     let guessString = ""
     let rightGuess = Array.from(rightGuessString)
 
@@ -114,7 +119,7 @@ const checkGuess = () => {
         guessString += val
     }
 
-    if (guessString.length !== 5) {
+    if (guessString.length !== currentGameWordLength) {
         toastr.error("Not enough letters!")
         return;
     }
@@ -127,7 +132,7 @@ const checkGuess = () => {
     // color for green-purple: linear-gradient(180deg in oklab, var(--yellow-green) 45%, var(--aero) 115%)
     // color for yellow-purple: linear-gradient(180deg in oklab, var(--maize) 45%, var(--aero) 115%)
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < currentGameWordLength; i++) {
         let letterColor = "";
         let box = row.children[i];
         let letter = currentGuess[i]
@@ -219,12 +224,27 @@ const resetLetterBoxes = () => {
 }
 
 const resetGame = () => {
-    guessesRemaining = NUMBER_OF_GUESSES
     currentGuess = []
     nextLetter = 0;
-    //rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
-    //rightGuessString = "poses"
-    rightGuessString = DEBUG ? "poses" : WORDS[Math.floor(Math.random() * WORDS.length)]
+    
+    //rightGuessString = DEBUG ? "poses" : WORDS[Math.floor(Math.random() * WORDS.length)]
+    
+    if (DEBUG) {
+        currentGameWordLength = 5;
+        rightGuessString = "poses";
+    } else {
+        switch(currentGameWordLength) {
+            case 5:
+                rightGuessString = WORDS[Math.floor(Math.random() * WORDS.length)]
+                break;
+            case 6:
+                rightGuessString = WORDS_6[Math.floor(Math.random() * WORDS_6.length)]
+                break;
+        }
+        
+    }
+    
+    guessesRemaining = NUMBER_OF_GUESSES(currentGameWordLength)
     console.log(rightGuessString)
     resetLetterBoxes()
     resetKeyBoard();

@@ -99,3 +99,28 @@ button {
 .hover-red:hover {
     background: var(--persian-red);
 }
+
+#modal-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgb(255, 255, 255);
+    border-radius: 2px;
+    border: 1px var(--raisin-black) solid;
+    padding: 0.5rem;
+    width: 50vw;
+    height: 90vh;
+}
+
+.new-game-button {
+    font-size: 1rem;
+    padding: 0.5rem;
+    font-weight: 700;
+    color: var(--raisin-black);
+    background: var(--maize);
+    border: 1px var(--raisin-black) solid;
+    border-radius: 3px;
+    color: var(--raisin-black);
+    cursor: pointer;
+}
