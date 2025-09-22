@@ -13,7 +13,7 @@ let guessesRemaining;
 let currentGuess;
 let nextLetter;
 let rightGuessString;
-let currentGameWordLength = 5;
+let currentGameWordLength = 6;
 
 const colors = {
     aero: '#815bebff',
@@ -98,7 +98,7 @@ const insertLetter = (pressedKey) => {
 
     pressedKey = pressedKey.toLowerCase();
 
-    let row = document.getElementsByClassName("letter-row")[currentGameWordLength + 1 - guessesRemaining]
+    let row = document.getElementsByClassName("letter-row")[NUMBER_OF_GUESSES(currentGameWordLength) - guessesRemaining]
     let box = row.children[nextLetter]
     animateCSS(box, 'pulse')
     box.textContent = pressedKey;
@@ -108,7 +108,7 @@ const insertLetter = (pressedKey) => {
 }
 
 const deleteLetter = () => {
-    let row = document.getElementsByClassName('letter-row')[currentGameWordLength + 1 - guessesRemaining]
+    let row = document.getElementsByClassName('letter-row')[NUMBER_OF_GUESSES(currentGameWordLength) - guessesRemaining]
     let box = row.children[nextLetter - 1]
     box.textContent = ""
     box.classList.remove("filled-box")
@@ -117,7 +117,7 @@ const deleteLetter = () => {
 }
 
 const checkGuess = () => {
-    let row = document.getElementsByClassName('letter-row')[currentGameWordLength + 1 - guessesRemaining]
+    let row = document.getElementsByClassName('letter-row')[NUMBER_OF_GUESSES(currentGameWordLength) - guessesRemaining]
     let guessString = ""
     let rightGuess = Array.from(rightGuessString)
 
@@ -130,10 +130,21 @@ const checkGuess = () => {
         return;
     }
 
-    if (!WORDS.includes(guessString)) {
-        toastr.error("Word not in list!")
-        return
+    switch (currentGameWordLength) {
+        case 5:
+            if (!WORDS.includes(guessString)) {
+                toastr.error("Word not in list!")
+                return
+            }
+            break;
+        case 6:
+            if (!WORDS_6.includes(guessString)) {
+                toastr.error("Word not in list!")
+                return;
+            }
+            break;
     }
+
 
     // color for green-purple: linear-gradient(180deg in oklab, var(--yellow-green) 45%, var(--aero) 115%)
     // color for yellow-purple: linear-gradient(180deg in oklab, var(--maize) 45%, var(--aero) 115%)
@@ -188,6 +199,9 @@ const checkGuess = () => {
     if (guessString === rightGuessString) {
         toastr.success("You Guessed right! Game over!")
         guessesRemaining = 0;
+
+        setTimeout(() => modal.dataset.active = "true", 2500)
+
         return;
     } else {
         guessesRemaining -= 1;
@@ -197,6 +211,8 @@ const checkGuess = () => {
         if (guessesRemaining === 0) {
             toastr.error("You've run out of guesses! Game over!")
             toastr.info(`The right word was: ${rightGuessString}`)
+        
+            setTimeout(() => modal.dataset.active = "true", 2500)
         }
     }
 }
@@ -236,7 +252,7 @@ const resetGame = () => {
     //rightGuessString = DEBUG ? "poses" : WORDS[Math.floor(Math.random() * WORDS.length)]
     
     if (DEBUG) {
-        currentGameWordLength = 5;
+        setBoard(5)
         rightGuessString = "poses";
     } else {
         switch(currentGameWordLength) {
@@ -254,6 +270,17 @@ const resetGame = () => {
     console.log(rightGuessString)
     resetLetterBoxes()
     resetKeyBoard();
+}
+
+/**
+ * 
+ * @param {number} wordLength 
+ */
+const setBoard = (wordLength) => {
+    if (currentGameWordLength !== wordLength) {
+        currentGameWordLength = wordLength;
+        initBoard(currentGameWordLength)
+    }
 }
 
 
@@ -308,6 +335,20 @@ document.getElementById('new-game').addEventListener('click', () => {
 document.getElementById('new-game').addEventListener('keydown', (e) => {
     e.preventDefault();
 })
+
+newGame5.addEventListener('click', () => {
+    setBoard(5)
+    resetGame()
+    if (modal.dataset.active === "true") modal.dataset.active = "false"
+})
+
+newGame6.addEventListener('click', () => {
+    setBoard(6)
+    resetGame()
+    if (modal.dataset.active === "true") modal.dataset.active = "false"
+})
+
+
 
 resetGame();
 
